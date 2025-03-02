@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
+import altair as alt
 import time
 
 st.title("📡 Real-Time IoT Sensor Dashboard")
@@ -30,13 +30,24 @@ while True:
         st.subheader("📊 Sensor Data")
         st.dataframe(st.session_state.data.tail(10))  # Show last 10 readings
 
-        # Line charts
-        fig_temp = px.line(st.session_state.data, x="Timestamp", y="Temperature (°C)", title="Temperature Over Time")
-        fig_humidity = px.line(st.session_state.data, x="Timestamp", y="Humidity (%)", title="Humidity Over Time")
-        fig_pressure = px.line(st.session_state.data, x="Timestamp", y="Pressure (hPa)", title="Pressure Over Time")
+        # Line charts with Altair
+        temp_chart = alt.Chart(st.session_state.data).mark_line().encode(
+            x='Timestamp:T',
+            y='Temperature (°C):Q'
+        ).properties(title="Temperature Over Time")
 
-        st.plotly_chart(fig_temp, use_container_width=True)
-        st.plotly_chart(fig_humidity, use_container_width=True)
-        st.plotly_chart(fig_pressure, use_container_width=True)
+        humidity_chart = alt.Chart(st.session_state.data).mark_line().encode(
+            x='Timestamp:T',
+            y='Humidity (%):Q'
+        ).properties(title="Humidity Over Time")
+
+        pressure_chart = alt.Chart(st.session_state.data).mark_line().encode(
+            x='Timestamp:T',
+            y='Pressure (hPa):Q'
+        ).properties(title="Pressure Over Time")
+
+        st.altair_chart(temp_chart, use_container_width=True)
+        st.altair_chart(humidity_chart, use_container_width=True)
+        st.altair_chart(pressure_chart, use_container_width=True)
 
     time.sleep(2)  # Updates every 2 seconds
